@@ -1,0 +1,65 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>Mis Tareas</ion-title>
+    <ion-note slot="end" class="counter">{{ taskService.tasks().length }} pendientes</ion-note>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <!-- Formulario: agregar / editar -->
+  <form class="task-form" (ngSubmit)="save()">
+    <h2>{{ isEditing ? 'Editar tarea' : 'Nueva tarea' }}</h2>
+    <ion-input
+      label="Título"
+      labelPlacement="floating"
+      fill="outline"
+      name="title"
+      maxlength="60"
+      [(ngModel)]="title"
+      placeholder="Ej: Estudiar Ionic"
+    ></ion-input>
+    <ion-input
+      label="Descripción"
+      labelPlacement="floating"
+      fill="outline"
+      name="description"
+      maxlength="140"
+      [(ngModel)]="description"
+      placeholder="Detalle de la tarea"
+    ></ion-input>
+    <div class="form-actions">
+      <ion-button type="submit" expand="block" [disabled]="!canSave">
+        <ion-icon slot="start" [name]="isEditing ? 'save-outline' : 'add-circle-outline'"></ion-icon>
+        {{ isEditing ? 'Guardar' : 'Agregar tarea' }}
+      </ion-button>
+      <ion-button *ngIf="isEditing" type="button" fill="outline" color="medium" (click)="cancelEdit()">
+        Cancelar
+      </ion-button>
+    </div>
+  </form>
+
+  <!-- Lista de tareas -->
+  <h2 class="section-title">Lista de tareas</h2>
+
+  <ion-list *ngIf="taskService.tasks().length > 0; else empty" lines="full">
+    <ion-item *ngFor="let task of taskService.tasks(); trackBy: trackById" [class.editing]="task.id === editingId">
+      <ion-label class="ion-text-wrap">
+        <h3>{{ task.title }}</h3>
+        <p>{{ task.description || 'Sin descripción' }}</p>
+      </ion-label>
+      <ion-button slot="end" fill="clear" color="primary" aria-label="Editar tarea" (click)="edit(task)">
+        <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+      </ion-button>
+      <ion-button slot="end" fill="clear" color="danger" aria-label="Eliminar tarea" (click)="confirmDelete(task)">
+        <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+      </ion-button>
+    </ion-item>
+  </ion-list>
+
+  <ng-template #empty>
+    <div class="empty-state">
+      <ion-icon name="checkmark-done-outline"></ion-icon>
+      <p>No tienes tareas pendientes.<br />Agrega la primera con el formulario.</p>
+    </div>
+  </ng-template>
+</ion-content>
